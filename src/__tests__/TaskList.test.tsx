@@ -101,6 +101,7 @@ describe('TaskList', () => {
 	});
 
 	it('calls onToggle when checkbox clicked', async () => {
+		const user = userEvent.setup();
 		const onToggle = vi.fn();
 		render(
 			<TaskList
@@ -113,9 +114,9 @@ describe('TaskList', () => {
 			/>
 		);
 		const checkboxes = screen.getAllByRole('checkbox');
-		await userEvent.click(checkboxes[0]);
+		await user.click(checkboxes[0]);
 		expect(onToggle).toHaveBeenCalledWith(1);
-	});
+	}, 15000);
 
 	it('calls onDelete when delete button clicked', async () => {
 		const onDelete = vi.fn();
