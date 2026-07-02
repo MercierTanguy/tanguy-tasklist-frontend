@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { TaskList } from '../components/TaskList';
 import type { Task } from '../types/task';
@@ -55,5 +56,84 @@ describe('TaskList', () => {
 		expect(screen.getByText('2 tâches')).toBeInTheDocument();
 	});
 
-	// ... TODO: Add more tests
+	it('shows error state', () => {
+		render(
+			<TaskList
+				tasks={[]}
+				loading={false}
+				error="Erreur réseau"
+				onToggle={vi.fn()}
+				onDelete={vi.fn()}
+				onEdit={vi.fn()}
+			/>
+		);
+		expect(screen.getByTestId('error')).toBeInTheDocument();
+		expect(screen.getByText('Erreur : Erreur réseau')).toBeInTheDocument();
+	});
+
+	it('shows empty state when no tasks', () => {
+		render(
+			<TaskList
+				tasks={[]}
+				loading={false}
+				error={null}
+				onToggle={vi.fn()}
+				onDelete={vi.fn()}
+				onEdit={vi.fn()}
+			/>
+		);
+		expect(screen.getByTestId('empty')).toBeInTheDocument();
+		expect(screen.getByText('Aucune tâche')).toBeInTheDocument();
+	});
+
+	it('shows correct completed count', () => {
+		render(
+			<TaskList
+				tasks={mockTasks}
+				loading={false}
+				error={null}
+				onToggle={vi.fn()}
+				onDelete={vi.fn()}
+				onEdit={vi.fn()}
+			/>
+		);
+		expect(screen.getByText('1 terminée')).toBeInTheDocument();
+	});
+
+	it('calls onToggle when checkbox clicked', async () => {
+		const onToggle = vi.fn();
+		render(
+			<TaskList
+				tasks={mockTasks}
+				loading={false}
+				error={null}
+				onToggle={onToggle}
+				onDelete={vi.fn()}
+				onEdit={vi.fn()}
+			/>
+		);
+		const checkboxes = screen.getAllByRole('checkbox');
+		await userEvent.click(checkboxes[0]);
+		expect(onToggle).toHaveBeenCalledWith(1);
+	});
+
+	it('calls onDelete when delete button clicked', async () => {
+		const onDelete = vi.fn();
+		render(
+			<TaskList
+				tasks={mockTasks}
+				loading={false}
+				error={null}
+				onToggle={vi.fn()}
+				onDelete={onDelete}
+				onEdit={vi.fn()}
+			/>
+		);
+		const deleteButtons = screen.getAllByTitle('Supprimer');
+
+		await userEvent.click(deleteButtons[0]);
+		await userEvent.click(deleteButtons[0]);
+
+		expect(onDelete).toHaveBeenCalledWith(1);
+	});
 });
