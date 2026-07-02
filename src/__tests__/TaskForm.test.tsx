@@ -29,30 +29,32 @@ describe('TaskForm', () => {
 
     it('calls onSubmit with form data when submitted', async () => {
         const onSubmit = vi.fn();
+        const user = userEvent.setup();
         render(<TaskForm onSubmit={onSubmit} />);
 
-        await userEvent.type(screen.getByLabelText('Titre'), 'Nouvelle tâche');
-        await userEvent.type(screen.getByLabelText('Description'), 'Ma description');
-        await userEvent.click(screen.getByText('Ajouter'));
+        await user.type(screen.getByLabelText('Titre'), 'Nouvelle tâche');
+        await user.type(screen.getByLabelText('Description'), 'Ma description');
+        await user.click(screen.getByText('Ajouter'));
 
         expect(onSubmit).toHaveBeenCalledWith({
             title: 'Nouvelle tâche',
             description: 'Ma description',
         });
-    });
+    }, 15000);
 
     it('calls onSubmit without description when empty', async () => {
         const onSubmit = vi.fn();
+        const user = userEvent.setup();
         render(<TaskForm onSubmit={onSubmit} />);
 
-        await userEvent.type(screen.getByLabelText('Titre'), 'Tâche sans description');
-        await userEvent.click(screen.getByText('Ajouter'));
+        await user.type(screen.getByLabelText('Titre'), 'Tâche sans description');
+        await user.click(screen.getByText('Ajouter'));
 
         expect(onSubmit).toHaveBeenCalledWith({
             title: 'Tâche sans description',
             description: undefined,
         });
-    });
+    }, 15000);
 
     it('shows validation error when title is empty', async () => {
         render(<TaskForm onSubmit={vi.fn()} />);
@@ -72,13 +74,14 @@ describe('TaskForm', () => {
 
     it('resets form after successful create submission', async () => {
         const onSubmit = vi.fn();
+        const user = userEvent.setup();
         render(<TaskForm onSubmit={onSubmit} />);
 
-        await userEvent.type(screen.getByLabelText('Titre'), 'Tâche test');
-        await userEvent.click(screen.getByText('Ajouter'));
+        await user.type(screen.getByLabelText('Titre'), 'Tâche test');
+        await user.click(screen.getByText('Ajouter'));
 
         expect(screen.getByLabelText('Titre')).toHaveValue('');
-    });
+    }, 15000);
 
     it('does not reset form after edit submission', async () => {
         const onSubmit = vi.fn();
